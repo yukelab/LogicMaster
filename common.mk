@@ -1,3 +1,17 @@
+GCC_PATH = /opt/gcc-arm-none-eabi-6_2-2016q4/bin
+PREFIX = arm-none-eabi-
+ifdef GCC_PATH
+	CC = $(GCC_PATH)/$(PREFIX)gcc
+	AS = $(GCC_PATH)/$(PREFIX)gcc -x assembler-with-cpp
+	CP = $(GCC_PATH)/$(PREFIX)objcopy
+	SZ = $(GCC_PATH)/$(PREFIX)size
+else
+	CC = $(PREFIX)gcc
+	AS = $(PREFIX)gcc -x assembler-with-cpp
+	CP = $(PREFIX)objcopy
+	SZ = $(PREFIX)size
+endif
+
 CFLAGS += -mcpu=cortex-m4 -mthumb -Wall -std=gnu99
 CFLAGS += -Wno-unused-variable #don't waring unused variable 
 CFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16 #use hard float uint
@@ -13,9 +27,11 @@ LFLAGS += -Os -Wl,--gc-sections
 #LFLAGS += -Wl,-Map=flash_sram.map
 
 %.o:%.S
+# @arm-none-eabi-gcc $(CFLAGS) -c $< -o $@
 	@echo cc: $<
-	@arm-none-eabi-gcc $(CFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) -c $< -o $@
 %.o:%.c
+# @arm-none-eabi-gcc $(CFLAGS) $(DEFS) $(INCS) -c $< -o $@
 	@echo cc: $<
-	@arm-none-eabi-gcc $(CFLAGS) $(DEFS) $(INCS) -c $< -o $@
+	@$(CC) $(CFLAGS) $(DEFS) $(INCS) -c $< -o $@
 
